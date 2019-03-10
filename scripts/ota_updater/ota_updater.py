@@ -13,7 +13,7 @@ def on_connect(client, userdata, flags, rc):
     else:
         print("Connected with result code {}".format(rc))
 
-    client.subscribe("{base_topic}{device_id}/$online".format(**userdata))
+    client.subscribe("{base_topic}{device_id}/$state".format(**userdata))
 
     print("Waiting for device to come online...")
 
@@ -38,6 +38,9 @@ def on_message(client, userdata, msg):
                 sys.stdout.flush()
             elif status == 304: # not modified
                 print("Device firmware already up to date with md5 checksum: {}".format(userdata.get('md5')))
+                client.disconnect()
+            elif status == 400: # Not enough space
+                print("ERROR: Not enough space on device")
                 client.disconnect()
             elif status == 403: # forbidden
                 print("Device ota disabled, aborting...")
@@ -66,8 +69,9 @@ def on_message(client, userdata, msg):
             print("Device ota disabled, aborting...")
             client.disconnect()
 
-    elif msg.topic.endswith('$online'):
-        if msg.payload == 'false':
+    elif msg.topic.endswith('$state'):
+        if msg.payload != 'ready':
+            print("Device state: {}".format(msg.payload))
             return
 
         # calcluate firmware md5
