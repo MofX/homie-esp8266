@@ -1168,35 +1168,37 @@ bool HomieInternals::BootNormal::__handleNodeProperty(char * topic, char * paylo
     return true;
   }
 
-  #ifdef DEBUG
-    Interface::get().getLogger() << F("Calling global input handler...") << endl;
-  #endif // DEBUG
-  bool handled = Interface::get().globalInputHandler(*homieNode, range, String(property), String(_mqttPayloadBuffer.get()));
-  if (handled) return true;
+  if (strcmp(_mqttTopicLevels.get()[_mqttTopicLevelsCount - 1], "set") == 0)
+  {
+    #ifdef DEBUG
+      Interface::get().getLogger() << F("Calling global input handler...") << endl;
+    #endif // DEBUG
+    bool handled = Interface::get().globalInputHandler(*homieNode, range, String(property), String(_mqttPayloadBuffer.get()));
+    if (handled) return true;
 
-  #ifdef DEBUG
-    Interface::get().getLogger() << F("Calling node input handler...") << endl;
-  #endif // DEBUG
-  handled = homieNode->handleInput(range, String(property), String(_mqttPayloadBuffer.get()));
-  if (handled) return true;
+    #ifdef DEBUG
+      Interface::get().getLogger() << F("Calling node input handler...") << endl;
+    #endif // DEBUG
+    handled = homieNode->handleInput(range, String(property), String(_mqttPayloadBuffer.get()));
+    if (handled) return true;
 
-  #ifdef DEBUG
-    Interface::get().getLogger() << F("Calling property input handler...") << endl;
-  #endif // DEBUG
-  handled = propertyObject->getInputHandler()(range, String(_mqttPayloadBuffer.get()));
+    #ifdef DEBUG
+      Interface::get().getLogger() << F("Calling property input handler...") << endl;
+    #endif // DEBUG
+    handled = propertyObject->getInputHandler()(range, String(_mqttPayloadBuffer.get()));
 
-  if (!handled) {
-    Interface::get().getLogger() << F("No handlers handled the following packet:") << endl;
-    Interface::get().getLogger() << F("  • Node ID: ") << node << endl;
-    Interface::get().getLogger() << F("  • Is range? ");
-    if (range.isRange) {
-      Interface::get().getLogger() << F("yes (") << range.index << F(")") << endl;
-    } else {
-      Interface::get().getLogger() << F("no") << endl;
+    if (!handled) {
+      Interface::get().getLogger() << F("No handlers handled the following packet:") << endl;
+      Interface::get().getLogger() << F("  • Node ID: ") << node << endl;
+      Interface::get().getLogger() << F("  • Is range? ");
+      if (range.isRange) {
+        Interface::get().getLogger() << F("yes (") << range.index << F(")") << endl;
+      } else {
+        Interface::get().getLogger() << F("no") << endl;
+      }
+      Interface::get().getLogger() << F("  • Property: ") << property << endl;
+      Interface::get().getLogger() << F("  • Value: ") << _mqttPayloadBuffer.get() << endl;
     }
-    Interface::get().getLogger() << F("  • Property: ") << property << endl;
-    Interface::get().getLogger() << F("  • Value: ") << _mqttPayloadBuffer.get() << endl;
   }
-
   return false;
 }
