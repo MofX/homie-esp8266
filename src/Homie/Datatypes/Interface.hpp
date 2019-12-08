@@ -19,6 +19,17 @@ class Config;
 class SendingPromise;
 class HomieClass;
 
+class LLogger {
+  public:
+    void setLogging(bool) {}
+    void setPrinter(Print*) {}
+    void printf(...) {}
+};
+
+template<class T>
+inline LLogger &operator <<(LLogger &stream, T arg)
+{ return stream; }
+
 class InterfaceData {
   friend HomieClass;
 
@@ -67,14 +78,14 @@ class InterfaceData {
   /***** Runtime data *****/
   HomieEvent event;
   bool ready;
-  Logger& getLogger() { return *_logger; }
+  LLogger& getLogger() { return *_logger; }
   Blinker& getBlinker() { return *_blinker; }
   Config& getConfig() { return *_config; }
   AsyncMqttClient& getMqttClient() { return *_mqttClient; }
   SendingPromise& getSendingPromise() { return *_sendingPromise; }
 
  private:
-  Logger* _logger;
+  LLogger* _logger;
   Blinker* _blinker;
   Config* _config;
   AsyncMqttClient* _mqttClient;

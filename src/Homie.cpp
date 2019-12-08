@@ -347,7 +347,7 @@ AsyncMqttClient& HomieClass::getMqttClient() {
   return _mqttClient;
 }
 
-Logger& HomieClass::getLogger() {
+LLogger& HomieClass::getLogger() {
   return _logger;
 }
 

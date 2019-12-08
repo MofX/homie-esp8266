@@ -63,7 +63,7 @@ class HomieClass {
   static bool isConnected();
   static const ConfigStruct& getConfiguration();
   AsyncMqttClient& getMqttClient();
-  Logger& getLogger();
+  LLogger& getLogger();
   #ifdef ESP32
   //FIXME implement on ESP32
   #elif defined(ESP8266)
@@ -82,7 +82,7 @@ class HomieClass {
 #endif
   bool _flaggedForReboot;
   SendingPromise _sendingPromise;
-  Logger _logger;
+  LLogger _logger;
   Blinker _blinker;
   Config _config;
   AsyncMqttClient _mqttClient;
