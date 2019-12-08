@@ -48,9 +48,9 @@ void BootConfig::setup() {
   Helpers::ipToString(ACCESS_POINT_IP, _apIpStr);
 
   Interface::get().getLogger() << F("AP started as ") << apName << F(" with IP ") << _apIpStr << endl;
-  _dns.setTTL(30);
-  _dns.setErrorReplyCode(DNSReplyCode::NoError);
-  _dns.start(53, F("*"), ACCESS_POINT_IP);
+  //_dns.setTTL(30);
+  //_dns.setErrorReplyCode(DNSReplyCode::NoError);
+  //_dns.start(53, F("*"), ACCESS_POINT_IP);
 
   __setCORS();
   _http.on("/heart", HTTP_GET, [this](AsyncWebServerRequest *request) {
@@ -62,13 +62,13 @@ void BootConfig::setup() {
   _http.on("/config", HTTP_PUT, [this](AsyncWebServerRequest *request) { _onConfigRequest(request); }).onBody(BootConfig::__parsePost);
   _http.on("/wifi/connect", HTTP_PUT, [this](AsyncWebServerRequest *request) { _onWifiConnectRequest(request); }).onBody(BootConfig::__parsePost);
   _http.on("/wifi/status", HTTP_GET, [this](AsyncWebServerRequest *request) { _onWifiStatusRequest(request); });
-  _http.on("/proxy/control", HTTP_PUT, [this](AsyncWebServerRequest *request) { _onProxyControlRequest(request); }).onBody(BootConfig::__parsePost);
+  //_http.on("/proxy/control", HTTP_PUT, [this](AsyncWebServerRequest *request) { _onProxyControlRequest(request); }).onBody(BootConfig::__parsePost);
   _http.onNotFound([this](AsyncWebServerRequest *request) {
     if ( request->method() == HTTP_OPTIONS ) {
-      Interface::get().getLogger() << F("Received CORS request for ")<< request->url() << endl;
+      //Interface::get().getLogger() << F("Received CORS request for ")<< request->url() << endl;
       request->send(200);
     } else {
-      _onCaptivePortal(request);
+      //_onCaptivePortal(request);
     }
   });
   _http.begin();
@@ -77,7 +77,7 @@ void BootConfig::setup() {
 void BootConfig::loop() {
   Boot::loop();
 
-  _dns.processNextRequest();
+  //_dns.processNextRequest();
 
   if (_flaggedForReboot) {
     if (millis() - _flaggedForRebootAt >= 3000UL) {
@@ -257,7 +257,7 @@ void BootConfig::_generateNetworksJson() {
   json.printTo(output);
   _jsonWifiNetworks = output;
 }
-
+/*
 void BootConfig::_onCaptivePortal(AsyncWebServerRequest *request) {
   String host = request->host();
   Interface::get().getLogger() << F("Received captive portal request: ");
@@ -334,6 +334,7 @@ void BootConfig::_proxyHttpRequest(AsyncWebServerRequest *request) {
   request->send(response);
   _httpClient.end();
 }
+*/
 
 void BootConfig::_onDeviceInfoRequest(AsyncWebServerRequest *request) {
   Interface::get().getLogger() << F("Received device information request") << endl;
